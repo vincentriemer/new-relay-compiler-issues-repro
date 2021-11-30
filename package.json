@@ -1,0 +1,40 @@
+{
+  "name": "new-relay-compiler-issues-repro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "typescript": "tsc",
+    "relay:compiler": "sleep 1 && relay-compiler",
+    "relay:persistor": "node mockQueryPersistServer.js",
+    "relay": "run-p -r relay:**",
+    "test": "run-s relay typescript"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vincentriemer/new-relay-compiler-issues-repro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vincentriemer/new-relay-compiler-issues-repro/issues"
+  },
+  "homepage": "https://github.com/vincentriemer/new-relay-compiler-issues-repro#readme",
+  "dependencies": {
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-relay": "0.0.0-main-f0fc1eea",
+    "relay-runtime": "0.0.0-main-f0fc1eea"
+  },
+  "devDependencies": {
+    "@types/react": "17.0.37",
+    "@types/react-relay": "11.0.2",
+    "typescript": "4.5.2",
+    "relay-compiler": "0.0.0-main-f0fc1eea",
+    "prettier": "2.5.0",
+    "express": "4.17.1",
+    "body-parser": "1.19.0",
+    "npm-run-all": "4.1.5"
+  }
+}

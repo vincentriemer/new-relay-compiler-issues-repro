@@ -1,0 +1,563 @@
+directive @defer(label: String, if: Boolean) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+type AuthorizedNavbar implements Navbar {
+  me: Me
+  subreddits(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): SubredditConnection
+}
+
+interface Navbar {
+  subreddits(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): SubredditConnection
+}
+
+"""A connection to a list of items."""
+type SubredditConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [SubredditEdge]
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""An edge in a connection."""
+type SubredditEdge {
+  """The item at the end of the edge"""
+  node: Subreddit
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Subreddit implements Node & ISubmissionAggregator {
+  """The global ID of an object"""
+  id: ID!
+  type: String!
+  community_icon: String
+  created: Int!
+  created_utc: Int!
+  description: String
+  description_html: String
+  display_name: String!
+  display_name_prefixed: String!
+  icon_img: String
+  name: String!
+  show_media: Boolean!
+  show_media_preview: Boolean!
+  subscribers: Int!
+  suggested_comment_sort: String
+  title: String!
+  url: String!
+  user_flair: Flair!
+  submissions(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    sort: SORT = BEST
+    t: TIMEFRAME
+  ): SubmissionConnection
+}
+
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
+interface ISubmissionAggregator {
+  submissions(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    sort: SORT = BEST
+    t: TIMEFRAME
+  ): SubmissionConnection
+}
+
+"""A connection to a list of items."""
+type SubmissionConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [SubmissionEdge]
+}
+
+"""An edge in a connection."""
+type SubmissionEdge {
+  """The item at the end of the edge"""
+  node: Submission
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Submission implements Node {
+  """The global ID of an object"""
+  id: ID!
+  type: String!
+  author: String!
+  author_flair: Flair!
+  author_fullname: String
+  author_patreon_flair: Boolean!
+  banned_at_utc: Int
+  banned_by: String
+  can_gild: Boolean!
+  can_mod_post: Boolean!
+  clicked: Boolean!
+  created: Int!
+  created_utc: Int!
+  domain: String!
+  downs: Int!
+  edited: Boolean!
+  gilded: Int!
+  gildings: Gildings
+  hidden: Boolean!
+  hide_score: Boolean!
+  reddit_id: String!
+  is_crosspostable: Boolean!
+  is_meta: Boolean!
+  is_original_content: Boolean!
+  is_reddit_media_domain: Boolean!
+  is_robot_indexable: Boolean!
+  is_self: Boolean!
+  is_video: Boolean!
+  link_flair: Flair
+  locked: Boolean!
+  media_only: Boolean!
+  name: String!
+  no_follow: Boolean!
+  num_comments: Int!
+  num_crossposts: Int!
+  num_reports: Int
+  over_18: Boolean!
+  permalink: String!
+  pinned: Boolean!
+  pwls: Int!
+  quarantine: Boolean!
+  saved: Boolean!
+  score: Int!
+  send_replies: Boolean!
+  spoiler: Boolean!
+  stickied: Boolean!
+  subreddit_name: String!
+  subreddit_type: String!
+  suggested_sort: String
+  thumbnail: Thumbnail
+  title: String!
+  ups: Int!
+  url: String
+  view_count: Int
+  visited: Boolean!
+  attachment(supported: [String]): Attachment
+  selftext: SelfText
+  twitterCard: TwitterCard
+  link: SubmissionLink
+  crosspost_parent: Submission
+  subreddit: Subreddit!
+  comments(sort: MSG_SORT = TOP, threaded: Boolean = true): [CommentUnion!]!
+}
+
+type Flair {
+  content: FlairContent
+  text_color: String
+  background_color: String
+}
+
+union FlairContent = TextFlair | RichTextFlair
+
+type TextFlair {
+  text: String!
+}
+
+type RichTextFlair {
+  richtext: [RichTextFlairEntity!]!
+}
+
+union RichTextFlairEntity = RichTextFlairEntityText | RichTextFlairEntityEmoji
+
+type RichTextFlairEntityText {
+  text: String!
+}
+
+type RichTextFlairEntityEmoji {
+  url: String!
+}
+
+type Gildings {
+  gid_1: Int!
+  gid_2: Int!
+  gid_3: Int!
+}
+
+union Thumbnail = LinkThumbnail | NamedThumbnail
+
+type LinkThumbnail {
+  src: String!
+  width: Int!
+  height: Int!
+}
+
+type NamedThumbnail {
+  name: ThumbnailName!
+}
+
+enum ThumbnailName {
+  SELF
+  DEFAULT
+  SPOILER
+  IMAGE
+  NSFW
+}
+
+union Attachment = StreamableAttachment | RedditVideoAttachment | YouTubeAttachment | GifAttachment | ImageAttachment
+
+type StreamableAttachment {
+  embedUrl: String!
+  width: Int!
+  height: Int!
+}
+
+type RedditVideoAttachment {
+  video: Video!
+  url: String!
+  thumbnail: Thumbnail
+}
+
+type Video {
+  fallback_url: String!
+  height: Int!
+  width: Int!
+  scrubber_media_url: String!
+  dash_url: String!
+  duration: Int!
+  hls_url: String!
+  is_gif: Boolean!
+}
+
+type YouTubeAttachment {
+  url: String!
+  videoId: String!
+  width: Int!
+  height: Int!
+}
+
+type GifAttachment {
+  gifs(width: Int, height: Int, scale: Float): [AttachmentGif]
+  video: Gif
+  thumbnail: Thumbnail
+  url: String!
+}
+
+type AttachmentGif {
+  gif: AttachmentGifMedia
+  mp4: AttachmentGifMedia
+}
+
+type AttachmentGifMedia {
+  width: Int!
+  height: Int!
+  url: String!
+}
+
+type Gif {
+  fallback_url: String!
+  height: Int!
+  width: Int!
+  scrubber_media_url: String!
+  dash_url: String!
+  duration: Int!
+  hls_url: String!
+}
+
+type ImageAttachment {
+  images(width: Int, height: Int, scale: Float): [AttachmentImage]
+  thumbnail: Thumbnail
+  url: String!
+}
+
+type AttachmentImage {
+  width: Int!
+  height: Int!
+  url: String!
+}
+
+type SelfText {
+  text: String!
+  html: String!
+}
+
+type TwitterCard {
+  text: String!
+  retweet_count: Int!
+  favorite_count: Int!
+  permalink: String!
+  user: TwitterUser!
+}
+
+type TwitterUser {
+  name: String!
+  screen_name: String!
+  profile_image_url: String!
+}
+
+type SubmissionLink {
+  url: String!
+  thumbnail: Thumbnail
+}
+
+union CommentUnion = Comment | MoreCommentsStub
+
+type Comment implements Node {
+  """The global ID of an object"""
+  id: ID!
+  type: String!
+  author: String!
+  author_flair: Flair
+  author_fullname: String
+  body: String
+  body_html: String
+  can_gild: Boolean!
+  can_mod_post: Boolean!
+  collapsed: Boolean!
+  collapsed_reason: String
+  controversiality: Int!
+  created: Int!
+  created_utc: Int!
+  depth: Int!
+  downs: Int!
+  edited: Boolean!
+  gilded: Int!
+  gildings: Gildings!
+  reddit_id: String!
+  is_submitter: Boolean!
+  link_id: String!
+  name: String!
+  parent_id: String
+  permalink: String!
+  score: Int!
+  score_hidden: Boolean!
+  stickied: Boolean!
+  subreddit: String!
+  subreddit_id: String!
+  subreddit_name_prefixed: String!
+  ups: Int!
+}
+
+type MoreCommentsStub implements Node {
+  id: ID!
+  count: Int!
+  depth: Int!
+  children: [String]!
+}
+
+enum MSG_SORT {
+  TOP
+  CONFIDENCCE
+  NEW
+  CONTROVERSIAL
+  OLD
+  QA
+  RANDOM
+}
+
+enum SORT {
+  BEST
+  HOT
+  TOP
+  NEW
+  RISING
+  CONTROVERSIAL
+}
+
+enum TIMEFRAME {
+  HOUR
+  DAY
+  WEEK
+  MONTH
+  YEAR
+  ALL
+}
+
+type Me {
+  coins: Int!
+  comment_karma: Int!
+  created: Int!
+  created_utc: Int!
+  has_gold_subscription: Boolean!
+  has_verified_email: Boolean!
+  icon_img: String!
+  id: String!
+  inbox_count: Int!
+  is_gold: Boolean!
+  link_karma: Int!
+  name: String!
+  num_friends: Int!
+  over_18: Boolean!
+}
+
+type AnonymousNavbar implements Navbar {
+  subreddits(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): SubredditConnection
+}
+
+type Query {
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+  moreChildren(link_id: String!, children: [String]!): [CommentUnion]!
+  viewer: Viewer
+}
+
+type Viewer {
+  me: Me
+  frontpage: FrontPage
+  all: All
+  popular: Popular
+  subreddit(name: String!): ISubmissionAggregator
+  submission(name: ID!): Submission
+  comments(submission_name: String!, sort: MSG_SORT = TOP): [CommentUnion]
+  subreddits(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    category: SUBREDDIT_CATEGORY!
+  ): SubredditConnection
+  navbar: Navbar!
+}
+
+type FrontPage implements ISubmissionAggregator & Node {
+  id: ID!
+  submissions(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    sort: SORT = BEST
+    t: TIMEFRAME
+  ): SubmissionConnection
+}
+
+type All implements ISubmissionAggregator & Node {
+  id: ID!
+  submissions(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    sort: SORT = BEST
+    t: TIMEFRAME
+  ): SubmissionConnection
+}
+
+type Popular implements ISubmissionAggregator & Node {
+  id: ID!
+  submissions(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+    sort: SORT = BEST
+    t: TIMEFRAME
+  ): SubmissionConnection
+}
+
+enum SUBREDDIT_CATEGORY {
+  DEFAULT
+  SUBSCRIBED
+}
